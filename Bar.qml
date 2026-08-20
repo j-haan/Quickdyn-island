@@ -1,5 +1,9 @@
 // Bar.qml
 import Quickshell
+import Quickshell.Hyprland
+import Quickshell.Wayland
+import QtQuick
+
 
 Scope {
 
@@ -16,11 +20,28 @@ Scope {
         right: true
       }
 
-      implicitHeight: 40
+      implicitHeight: 60
+      color: "transparent"
 
-      ClockWidget {
-        anchors.centerIn: parent
 
+      WlrLayershell.namespace: "quickshell:bar"
+
+      Rectangle {
+        id: pill
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        implicitHeight: 50
+        implicitWidth: clock.implicitWidth + 120
+        radius: height / 2
+        color: "#FF000000"
+
+        ClockWidget {
+            id: clock
+            anchors.centerIn: parent
+
+        }
       }
     }
   }
