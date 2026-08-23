@@ -1,5 +1,5 @@
 // IslandContent.qml
-//
+
 import QtQuick
 
 Item {
@@ -30,7 +30,8 @@ Item {
 
     Connections {
         target: Brightness
-        function onChanged() {
+        function onPercentageChanged() {
+            if (!Brightness.ready) return; // ignore la lecture initiale
             root.showBrightness = true;
             revertTimer.restart();
         }

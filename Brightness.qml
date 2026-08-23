@@ -9,40 +9,43 @@ import QtQuick
 Singleton {
     id: root
 
+    // --- API publique --------------------------------------------------
     readonly property real percentage: maxBrightness > 0
         ? (currentBrightness / maxBrightness) * 100
         : 0
 
-    signal changed()
-
+    // --- État interne (ne pas lire depuis l'extérieur) ------------------
     property string devicePath: ""
     property int currentBrightness: 0
     property int maxBrightness: 1
+    property bool maxLoaded: false
+    property bool currentLoaded: false
+    readonly property bool ready: maxLoaded && currentLoaded
 
     Component.onCompleted: detectDevice.running = true
 
     Process {
         id: detectDevice
-        command: ["sh", "-c", "ls /sys/class/backlight | head -n1"]
+        command: ["ls", "/sys/class/backlight"]
         stdout: StdioCollector {
             onStreamFinished: {
-                const device = text.trim();
-                if (device.length === 0) {
-                    console.warn("Brightness: aucun périphérique backlight trouvé dans /sys/class/backlight");
+                const device = text.trim().split("\n")[0];
+                if (!device) {
+                    console.warn("Brightness: aucun périphérique dans /sys/class/backlight (ddcutil ?)");
                     return;
                 }
                 root.devicePath = "/sys/class/backlight/" + device;
-                readMax.running = true;
+                maxBrightnessFile.path = root.devicePath + "/max_brightness";
                 brightnessFile.path = root.devicePath + "/actual_brightness";
             }
         }
     }
 
-    Process {
-        id: readMax
-        command: ["cat", root.devicePath + "/max_brightness"]
-        stdout: StdioCollector {
-            onStreamFinished: root.maxBrightness = parseInt(text.trim()) || 1
+    FileView {
+        id: maxBrightnessFile
+        onLoaded: {
+            root.maxBrightness = parseInt(text().trim()) || 1;
+            root.maxLoaded = true;
         }
     }
 
@@ -52,7 +55,7 @@ Singleton {
         onFileChanged: reload()
         onLoaded: {
             root.currentBrightness = parseInt(text().trim()) || 0;
-            root.changed();
+            root.currentLoaded = true;
         }
     }
 }
