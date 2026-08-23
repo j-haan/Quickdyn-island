@@ -33,14 +33,17 @@ Scope {
         anchors.horizontalCenter: parent.horizontalCenter
 
         implicitHeight: 50
-        implicitWidth: clock.implicitWidth + 120
+        implicitWidth: island.implicitWidth + 120
         radius: height / 2
         color: "#FF000000"
 
-        ClockWidget {
-            id: clock
-            anchors.centerIn: parent
+        Behavior on implicitWidth {
+          NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+        }
 
+        IslandContent {
+            id: island
+            anchors.centerIn: parent
         }
       }
     }
