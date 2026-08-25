@@ -5,15 +5,23 @@ import QtQuick
 Item {
     id: root
 
-    property bool showBrightness: false
+    property string mode: "clock" // "clock" | "brightness" | "volume"
 
-    implicitWidth: showBrightness ? brightness.implicitWidth : clock.implicitWidth
-    implicitHeight: showBrightness ? brightness.implicitHeight : clock.implicitHeight
+    implicitWidth: {
+        if (mode === "brightness") return brightness.implicitWidth;
+        if (mode === "volume") return volume.implicitWidth;
+        return clock.implicitWidth;
+    }
+    implicitHeight: {
+        if (mode === "brightness") return brightness.implicitHeight;
+        if (mode === "volume") return volume.implicitHeight;
+        return clock.implicitHeight;
+    }
 
     ClockWidget {
         id: clock
         anchors.centerIn: parent
-        opacity: root.showBrightness ? 0 : 1
+        opacity: root.mode === "clock" ? 1 : 0
         Behavior on opacity {
             NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
         }
@@ -22,7 +30,16 @@ Item {
     BrightnessIndicator {
         id: brightness
         anchors.centerIn: parent
-        opacity: root.showBrightness ? 1 : 0
+        opacity: root.mode === "brightness" ? 1 : 0
+        Behavior on opacity {
+            NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+        }
+    }
+
+    VolumeIndicator {
+        id: volume
+        anchors.centerIn: parent
+        opacity: root.mode === "volume" ? 1 : 0
         Behavior on opacity {
             NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
         }
@@ -31,8 +48,17 @@ Item {
     Connections {
         target: Brightness
         function onPercentageChanged() {
-            if (!Brightness.ready) return; // ignore la lecture initiale
-            root.showBrightness = true;
+            if (!Brightness.ready) return;
+            root.mode = "brightness";
+            revertTimer.restart();
+        }
+    }
+
+    Connections {
+        target: Volume
+        function onPercentageChanged() {
+            if (!Volume.ready) return;
+            root.mode = "volume";
             revertTimer.restart();
         }
     }
@@ -40,6 +66,6 @@ Item {
     Timer {
         id: revertTimer
         interval: 2000
-        onTriggered: root.showBrightness = false
+        onTriggered: root.mode = "clock"
     }
 }

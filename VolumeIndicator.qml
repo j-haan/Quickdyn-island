@@ -1,4 +1,4 @@
-// BrightnessIndicator.qml
+// VolumeIndicator.qml
 
 import QtQuick
 import QtQuick.Layouts
@@ -8,9 +8,9 @@ RowLayout {
     spacing: 8
 
     Text {
-        text: "\uf522  "
-        font.family: "JetBrains Mono Nerd Font"
+        text: Volume.muted ? "\uf026  " : "\uf028  "
         color: "#FFFFFF"
+        font.family: "JetBrains Mono Nerd Font"
         font.pixelSize: 16
         Layout.alignment: Qt.AlignVCenter
     }
@@ -27,7 +27,7 @@ RowLayout {
             height: parent.height
             radius: parent.radius
             color: "#FFFFFF"
-            width: track.width * Math.max(0, Math.min(100, Brightness.percentage)) / 100
+            width: track.width * Math.max(0, Math.min(100, Volume.percentage)) / 100
 
             Behavior on width {
                 NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
@@ -36,7 +36,7 @@ RowLayout {
     }
 
     Text {
-        text: " " + Math.round(Brightness.percentage) + "%"
+        text: " " + Math.round(Volume.percentage) + "%"
         color: "#FFFFFF"
         font.family: "JetBrains Mono"
         font.bold: true
