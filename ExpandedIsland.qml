@@ -8,8 +8,7 @@ Item {
     property var islandContentRef
 
     implicitWidth: 500
-    implicitHeight: Math.max(mediaLayer.implicitHeight, notificationLayer.implicitHeight) + 32
-
+    implicitHeight: (showNotification ? notificationLayer.implicitHeight : mediaLayer.implicitHeight) + 32
     MediaLayer {
         id: mediaLayer
         anchors.fill: parent
