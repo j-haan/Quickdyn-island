@@ -1,4 +1,3 @@
-// Bar.qml
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
@@ -20,31 +19,34 @@ Scope {
         right: true
       }
 
-      implicitHeight: 60
+      property real maxIslandHeight: 70
+
+      exclusiveZone: 60
+      implicitHeight: maxIslandHeight + 30
       color: "transparent"
 
+      Connections {
+        target: island
+        function onImplicitHeightChanged() {
+          if (island.implicitHeight > maxIslandHeight)
+            maxIslandHeight = island.implicitHeight
+        }
+      }
 
       WlrLayershell.namespace: "quickshell:bar"
 
-      Rectangle {
-        id: pill
+      mask: Region {
+        x: island.x
+        y: island.y
+        width: island.width
+        height: island.height
+      }
+
+      Island {
+        id: island
         anchors.top: parent.top
         anchors.topMargin: 10
         anchors.horizontalCenter: parent.horizontalCenter
-
-        implicitHeight: 50
-        implicitWidth: island.implicitWidth + 120
-        radius: height / 2
-        color: "#FF000000"
-
-        Behavior on implicitWidth {
-          NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-        }
-
-        IslandContent {
-            id: island
-            anchors.centerIn: parent
-        }
       }
     }
   }
