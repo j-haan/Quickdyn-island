@@ -41,6 +41,7 @@ Rectangle {
 
     IslandContent {
         id: content
+        frozen: root.isExpanded
         anchors.centerIn: parent
         opacity: root.isExpanded ? 0 : 1
         Behavior on opacity {

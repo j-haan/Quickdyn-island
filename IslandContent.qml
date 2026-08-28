@@ -7,6 +7,13 @@ Item {
 
     property string mode: "clock" // "clock" | "brightness" | "volume" | "notification"
 
+    property bool frozen: false
+
+    onFrozenChanged: {
+        if (frozen) revertTimer.stop();
+        else if (root.mode !== "clock") revertTimer.restart();
+    }
+
     implicitWidth: {
         if (mode === "brightness") return brightness.implicitWidth;
         if (mode === "volume") return volume.implicitWidth;
